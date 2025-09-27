@@ -16,7 +16,7 @@ public class UserServiceTest {
 
     @BeforeEach
     void setUp() {
-        userService = new UserService("Mandla", "passord123");
+        userService = new UserService();
     }
 
     @Test

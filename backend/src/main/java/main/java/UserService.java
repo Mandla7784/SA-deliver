@@ -4,7 +4,6 @@ import java.security.MessageDigest;
 
 public class UserService {
 
-
     public  boolean login(String name, String password) {
          return true;
 
