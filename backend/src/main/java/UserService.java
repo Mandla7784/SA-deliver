@@ -8,8 +8,8 @@ public class UserService {
 
     }
 
-    public void register(String name, String password) {
-        System.out.println("User registered successfully");
+    public boolean register(String name, String password) {
+       return  true;
     }
 
     public void viewProfile(String name) {
