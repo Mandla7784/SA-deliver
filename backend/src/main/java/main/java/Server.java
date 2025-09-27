@@ -3,8 +3,6 @@ package main.java;
 import com.google.gson.Gson;
 import spark.Spark;
 
-
-
 import static spark.Spark.*;
 import com.google.gson.Gson;
 
@@ -22,6 +20,16 @@ public class Server {
             User user = gson.fromJson(req.body(), User.class);
             boolean success = userService.register(user.username, user.password);
             return gson.toJson(new Response(success, success ? "User registered" : "User exists"));
+
+        });
+
+        post("/login" ,(req, res)-> {
+            res.type("application/json");
+            User user = gson.fromJson(req.body(), User.class);
+            boolean success = userService.login(user.username, user.password);
+            return gson.toJson(new Response(success, success ? "Login successful" : "Invalid credentials"))
+                    ;
+
 
         });
 
