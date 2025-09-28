@@ -32,4 +32,47 @@ public class ServerTest {
           assertFalse(server.loginHandler(new UserService(), new User("Mandla", "password")));
 
     }
+    @Test
+    void testServerRegisterSuccess() {
+        Server server = new Server();
+        assertTrue(server.registerHandler(new UserService(), new User("Mandla", "password")));
+
+    }
+    @Test
+    void testServerRegisterFailure() {
+        Server server = new Server();
+        assertFalse(server.registerHandler(new UserService(), new User("Mandla", "password")));
+
+    }
+    @Test
+    void testServerDeleteProfileSuccess() {
+        Server server = new Server();
+        assertTrue(server.deleteProfileHandler(new UserService(), new User("Mandla", "password")));
+    }
+    @Test
+    void testServerDeleteProfileFailure() {
+        Server server = new Server();
+        assertFalse(server.deleteProfileHandler(new UserService(), new User("Mandla", "password")));
+    }
+    @Test
+    void testServerUpdateProfileSuccess() {
+        Server server = new Server();
+        assertTrue(server.updateProfileHandler(new UserService(), new User("Mandla", "password")));
+    }
+    @Test
+    void testServerUpdateProfileFailure() {
+        Server server = new Server();
+        assertFalse(server.updateProfileHandler(new UserService(), new User("Mandla", "password")));
+    }
+    @Test
+    void testServerGetProfileSuccess() {
+        Server server = new Server();
+        assertTrue(server.getProfileHandler(new UserService(), new User("Mandla", "password")));
+    }
+    @Test
+    void testServerGetProfileFailure() {
+        Server server = new Server();
+        assertFalse(server.getProfileHandler(new UserService(), new User("Mandla", "password")));
+    }
+
 }

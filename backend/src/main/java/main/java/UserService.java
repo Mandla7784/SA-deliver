@@ -43,8 +43,9 @@ public class UserService {
 
     }
 
-    public void updateProfile(String name, String password) {
+    public boolean updateProfile(String name, String password) {
         System.out.println("Updating profile of " + name);
+        return true;
 
 
     }
@@ -53,6 +54,10 @@ public class UserService {
         return  true;
 
 
+    }
+    public boolean getProfile(String name){
+        System.out.println("Getting profile of " + name);
+        return true;
     }
     public  void viewOrderHistory(String name){
         System.out.println("Viewing order history of " + name);

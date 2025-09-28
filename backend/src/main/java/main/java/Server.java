@@ -65,4 +65,17 @@ public class Server {
           return  userService.login(user.username , user.password);
 
     }
+    public static  boolean registerHandler(UserService userService ,User user) {
+          return  userService.register(user.username , user.password);
+    }
+    public static  boolean deleteProfileHandler(UserService userService ,User user) {
+          return  userService.deleteProfile(user.username);
+    }
+    public static  boolean updateProfileHandler(UserService userService ,User user) {
+          return  userService.updateProfile(user.username , user.password);
+    }
+    public static  boolean getProfileHandler(UserService userService ,User user) {
+          return  userService.getProfile(user.username);
+
+    }
 }
