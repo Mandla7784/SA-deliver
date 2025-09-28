@@ -15,8 +15,8 @@ public class ProductService {
       return new ArrayList<>(products.values());
   }
 
-  public String getProductById(String id) {
-      return products.get(id).toString();
+  public Product getProductById(String id) {
+      return  products.get(id);
   }
 
   public void addProduct(Product product , String id) {
@@ -27,5 +27,9 @@ public class ProductService {
   public  void updateProductStocks(String id , int quantity) {
       products.get(id).setStock(quantity);
 
+  }
+
+  public  void  deleteProduct(String id) {
+      products.remove(id);
   }
 }
