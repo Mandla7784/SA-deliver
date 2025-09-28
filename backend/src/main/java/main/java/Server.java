@@ -43,11 +43,20 @@ public class Server {
         });
       get("/users/:username" ,(req, res)-> {
              String username = req.params("username");
-             return   gson.toJson(userService.viewProfile(username));
+             return  gson.toJson(new Response(true, "User found"));
+
+      });
+
+      delete("/users:/username " ,(req, res)-> {
+          String username = req.params("username");
+          boolean deleted = userService.deleteProfile(username);
+          return   gson.toJson(new Response(deleted, deleted ? "User deleted" : "User not found"));
+
 
       });
 
     }
+
     public static String start() {
         return "Server running on http://localhost:8080";
     }
