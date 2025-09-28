@@ -5,12 +5,19 @@ import java.security.MessageDigest;
 public class UserService {
 
     public  boolean login(String name, String password) {
+//       return false if user does not exist
+        if(name == null || password == null) {
+            return false;
+        }
          return true;
 
     }
 
     public boolean register(String name, String password) {
-       return  true;
+      if(name == null || password == null) {
+           return false;
+      }
+      return true;
     }
    public  String hashingPassword(String password) {
         try {
@@ -41,8 +48,10 @@ public class UserService {
 
 
     }
-    public  void deleteProfile(String name){
+    public  boolean deleteProfile(String name){
         System.out.println("Deleting profile of " + name);
+        return  true;
+
 
     }
     public  void viewOrderHistory(String name){

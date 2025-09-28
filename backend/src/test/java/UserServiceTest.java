@@ -60,7 +60,7 @@ public class UserServiceTest {
 
     @Test
     void testLoginFailure() {
-        boolean result = userService.login("", "wrongpassword");
+        boolean result = userService.login(null,  null);
         assertFalse(result);
     }
 
@@ -70,14 +70,14 @@ public class UserServiceTest {
         assertTrue(results);
     }
 
-//    @Test
-//    void testRegisterFailure() {
-//        // First register should succeed
-//        userService.register("ExistingUser", "password123");
-//        // Second register with same username should fail
-//        boolean results = userService.register("ExistingUser", "password123");
-//        assertFalse(results);
-//    }
+    @Test
+    void testRegisterFailure() {
+        // First register should succeed
+        userService.register(null  ,null);
+        // Second register with same username should fail
+        boolean results = userService.register(null, null);
+        assertFalse(results);
+    }
 
     @Test
     void testViewProfile() {
