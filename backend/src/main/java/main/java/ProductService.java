@@ -51,7 +51,6 @@ public class ProductService {
             throw new IllegalArgumentException("Product cannot be null");
         }
         
-        // The product's ID is already generated in its constructor
         products.put(product.getId(), product);
         
         // Update category index
@@ -71,8 +70,6 @@ public class ProductService {
         if (id == null || updatedProduct == null || !products.containsKey(id)) {
             return null;
         }
-        
-        Product existing = products.get(id);
         
         // Preserve the ID and update other fields
         updatedProduct = new Product(

@@ -72,9 +72,7 @@ public class UserServiceTest {
 
     @Test
     void testRegisterFailure() {
-        // First register should succeed
         userService.register(null  ,null);
-        // Second register with same username should fail
         boolean results = userService.register(null, null);
         assertFalse(results);
     }

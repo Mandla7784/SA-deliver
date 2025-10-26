@@ -13,8 +13,6 @@ public class Server {
         UserService userService = new UserService();
         port(8080);
 
-
-        // Health check
         get("/health", (req, res) -> "Server is running");
 
         // Register user

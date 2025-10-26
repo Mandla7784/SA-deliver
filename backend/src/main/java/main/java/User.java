@@ -40,14 +40,13 @@ public class User {
     }
 
     public String getPassword() {
-        return password; // In a real application, never return the actual password
+        return password;
     }
 
     public void setPassword(String password) {
         if (password == null || password.trim().isEmpty()) {
             throw new IllegalArgumentException("Password cannot be empty");
         }
-        // Note: In a real application, you would hash the password here
         this.password = password.trim();
     }
 
@@ -57,7 +56,6 @@ public class User {
 
     public void setEmail(String email) {
         if (email != null && !email.isEmpty()) {
-            // Simple email validation
             if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
                 throw new IllegalArgumentException("Invalid email format");
             }

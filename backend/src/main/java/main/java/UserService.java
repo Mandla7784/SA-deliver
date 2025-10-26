@@ -4,7 +4,6 @@
         }
         User user = users.get(name.toLowerCase());
         if (user != null && user.isActive()) {
-            // In a real application, you might want to soft delete instead
             users.remove(name.toLowerCase());
             return true;
         }
@@ -22,6 +21,5 @@
     }
     public  void placeOrder(String name){
         System.out.println("Placing order for " + name);
-
     }
 }
