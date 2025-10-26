@@ -243,7 +243,7 @@ function displayProducts(products) {
             <div class="product-info">
                 <h3 class="product-name">${product.name}</h3>
                 <p class="product-description">${product.description}</p>
-                <div class="product-price">$${product.price}</div>
+                <div class="product-price">R ${product.price}</div>
                 <div class="product-stock">Stock: ${product.stock}</div>
                 <div class="product-category">${product.category}</div>
             </div>
