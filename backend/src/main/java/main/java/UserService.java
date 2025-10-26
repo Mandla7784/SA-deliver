@@ -1,11 +1,5 @@
 package main.java;
 
-import main.java.entities.User;
-import main.java.util.DatabaseUtil;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.query.Query;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.nio.charset.StandardCharsets;
@@ -14,14 +8,15 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Service class for managing user operations with database persistence
+ * Service class for managing user operations
  */
 public class UserService {
-    private final SessionFactory sessionFactory;
+    private final Map<String, User> users = new ConcurrentHashMap<>();
     private final Map<String, String> activeSessions = new ConcurrentHashMap<>();
 
     public UserService() {
-        this.sessionFactory = DatabaseUtil.getSessionFactory();
+        // Initialize with a sample user
+        initializeSampleData();
     }
 
     /**
@@ -32,27 +27,17 @@ public class UserService {
             return false;
         }
 
-        try (Session session = sessionFactory.openSession()) {
-            Transaction transaction = session.beginTransaction();
-            try {
-                // Check if user already exists
-                Query<User> query = session.createQuery("FROM User u WHERE u.username = :username", User.class);
-                query.setParameter("username", username.toLowerCase());
-                User existingUser = query.uniqueResult();
-                
-                if (existingUser != null) {
-                    return false;
-                }
+        String lowerUsername = username.toLowerCase();
+        if (users.containsKey(lowerUsername)) {
+            return false;
+        }
 
-                // Create new user
-                User newUser = new User(username, password);
-                session.persist(newUser);
-                transaction.commit();
-                return true;
-            } catch (Exception e) {
-                transaction.rollback();
-                return false;
-            }
+        try {
+            User newUser = new User(username, password);
+            users.put(lowerUsername, newUser);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
         }
     }
 
@@ -64,19 +49,14 @@ public class UserService {
             return false;
         }
 
-        try (Session session = sessionFactory.openSession()) {
-            Query<User> query = session.createQuery("FROM User u WHERE u.username = :username AND u.active = true", User.class);
-            query.setParameter("username", username.toLowerCase());
-            User user = query.uniqueResult();
-            
-            if (user != null && user.getPassword().equals(password)) {
-                // Generate session token
-                String sessionToken = generateSessionToken(username);
-                activeSessions.put(sessionToken, username.toLowerCase());
-                return true;
-            }
-            return false;
+        User user = users.get(username.toLowerCase());
+        if (user != null && user.isActive() && user.getPassword().equals(password)) {
+            // Generate session token
+            String sessionToken = generateSessionToken(username);
+            activeSessions.put(sessionToken, username.toLowerCase());
+            return true;
         }
+        return false;
     }
 
     /**
@@ -107,12 +87,7 @@ public class UserService {
         if (username == null) {
             return null;
         }
-
-        try (Session session = sessionFactory.openSession()) {
-            Query<User> query = session.createQuery("FROM User u WHERE u.username = :username", User.class);
-            query.setParameter("username", username.toLowerCase());
-            return query.uniqueResult();
-        }
+        return users.get(username.toLowerCase());
     }
 
     /**
@@ -123,25 +98,16 @@ public class UserService {
             return false;
         }
 
-        try (Session session = sessionFactory.openSession()) {
-            Transaction transaction = session.beginTransaction();
+        User user = users.get(username.toLowerCase());
+        if (user != null) {
             try {
-                Query<User> query = session.createQuery("FROM User u WHERE u.username = :username", User.class);
-                query.setParameter("username", username.toLowerCase());
-                User user = query.uniqueResult();
-                
-                if (user != null) {
-                    user.setPassword(newPassword);
-                    session.merge(user);
-                    transaction.commit();
-                    return true;
-                }
-                return false;
-            } catch (Exception e) {
-                transaction.rollback();
+                user.setPassword(newPassword);
+                return true;
+            } catch (IllegalArgumentException e) {
                 return false;
             }
         }
+        return false;
     }
 
     /**
@@ -152,35 +118,21 @@ public class UserService {
             return false;
         }
 
-        try (Session session = sessionFactory.openSession()) {
-            Transaction transaction = session.beginTransaction();
-            try {
-                Query<User> query = session.createQuery("FROM User u WHERE u.username = :username", User.class);
-                query.setParameter("username", username.toLowerCase());
-                User user = query.uniqueResult();
-                
-                if (user != null) {
-                    user.setActive(false);
-                    session.merge(user);
-                    transaction.commit();
-                    return true;
-                }
-                return false;
-            } catch (Exception e) {
-                transaction.rollback();
-                return false;
-            }
+        User user = users.get(username.toLowerCase());
+        if (user != null && user.isActive()) {
+            user.setActive(false);
+            return true;
         }
+        return false;
     }
 
     /**
      * Gets all users (admin function)
      */
     public List<User> getAllUsers() {
-        try (Session session = sessionFactory.openSession()) {
-            Query<User> query = session.createQuery("FROM User", User.class);
-            return query.list();
-        }
+        return users.values().stream()
+                .filter(User::isActive)
+                .toList();
     }
 
     /**
@@ -225,6 +177,16 @@ public class UserService {
             return hexString.toString();
         } catch (NoSuchAlgorithmException e) {
             return password;
+        }
+    }
+
+    private void initializeSampleData() {
+        // Add a sample user for testing
+        try {
+            User sampleUser = new User("admin", "password123");
+            users.put("admin", sampleUser);
+        } catch (IllegalArgumentException e) {
+            // Sample user creation failed, continue without it
         }
     }
 }
