@@ -270,12 +270,14 @@ public class ProductService {
             return getAllProducts();
         }
         
-        String searchTerm = query.toLowerCase();
-        return products.values().stream()
-                .filter(Product::isActive)
-                .filter(p -> p.getName().toLowerCase().contains(searchTerm) || 
-                            p.getDescription().toLowerCase().contains(searchTerm))
-                .collect(Collectors.toList());
+        try (Session session = sessionFactory.openSession()) {
+            Query<Product> hqlQuery = session.createQuery(
+                "FROM Product p WHERE p.active = true AND (LOWER(p.name) LIKE :query OR LOWER(p.description) LIKE :query)", 
+                Product.class
+            );
+            hqlQuery.setParameter("query", "%" + query.toLowerCase() + "%");
+            return hqlQuery.list();
+        }
     }
 
     /**
@@ -288,10 +290,14 @@ public class ProductService {
             return getAllProducts();
         }
         
-        return products.values().stream()
-                .filter(Product::isActive)
-                .filter(p -> p.getCategory().equalsIgnoreCase(category))
-                .collect(Collectors.toList());
+        try (Session session = sessionFactory.openSession()) {
+            Query<Product> query = session.createQuery(
+                "FROM Product p WHERE p.active = true AND LOWER(p.category) = :category", 
+                Product.class
+            );
+            query.setParameter("category", category.toLowerCase());
+            return query.list();
+        }
     }
 
     /**
@@ -299,10 +305,13 @@ public class ProductService {
      * @return Set of category names
      */
     public Set<String> getAllCategories() {
-        return products.values().stream()
-                .filter(Product::isActive)
-                .map(Product::getCategory)
-                .collect(Collectors.toSet());
+        try (Session session = sessionFactory.openSession()) {
+            Query<String> query = session.createQuery(
+                "SELECT DISTINCT p.category FROM Product p WHERE p.active = true", 
+                String.class
+            );
+            return new HashSet<>(query.list());
+        }
     }
 
     /**
@@ -311,11 +320,14 @@ public class ProductService {
      * @return List of featured products
      */
     public List<Product> getFeaturedProducts(int limit) {
-        return products.values().stream()
-                .filter(Product::isActive)
-                .sorted((p1, p2) -> Double.compare(p2.getRating(), p1.getRating()))
-                .limit(limit)
-                .collect(Collectors.toList());
+        try (Session session = sessionFactory.openSession()) {
+            Query<Product> query = session.createQuery(
+                "FROM Product p WHERE p.active = true ORDER BY p.rating DESC", 
+                Product.class
+            );
+            query.setMaxResults(limit);
+            return query.list();
+        }
     }
 
     /**
@@ -325,15 +337,25 @@ public class ProductService {
      * @return true if successful, false if product not found or invalid rating
      */
     public boolean addProductReview(String productId, double rating) {
-        try {
-            Product product = getProductById(productId);
-            if (product != null) {
-                product.addRating(rating);
-                return true;
-            }
-        } catch (IllegalArgumentException e) {
+        if (rating < 0.0 || rating > 5.0) {
             return false;
         }
-        return false;
+        
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            try {
+                Product product = session.get(Product.class, productId);
+                if (product != null) {
+                    product.addRating(rating);
+                    session.merge(product);
+                    transaction.commit();
+                    return true;
+                }
+                return false;
+            } catch (Exception e) {
+                transaction.rollback();
+                return false;
+            }
+        }
     }
 }
