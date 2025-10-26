@@ -1,5 +1,11 @@
 package main.java;
 
+import main.java.entities.Product;
+import main.java.util.DatabaseUtil;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -8,17 +14,21 @@ import java.util.stream.Collectors;
  * Handles product CRUD operations, inventory management, and product search.
  */
 public class ProductService {
-    private final Map<String, Product> products = new HashMap<>();
-    private final Map<String, List<String>> categoryIndex = new HashMap<>();
+    private final SessionFactory sessionFactory;
+
+    public ProductService() {
+        this.sessionFactory = DatabaseUtil.getSessionFactory();
+    }
 
     /**
      * Retrieves all active products
      * @return List of active products
      */
     public List<Product> getAllProducts() {
-        return products.values().stream()
-                .filter(Product::isActive)
-                .collect(Collectors.toList());
+        try (Session session = sessionFactory.openSession()) {
+            Query<Product> query = session.createQuery("FROM Product p WHERE p.active = true", Product.class);
+            return query.list();
+        }
     }
 
     /**
@@ -26,7 +36,10 @@ public class ProductService {
      * @return List of all products
      */
     public List<Product> getAllProductsIncludingInactive() {
-        return new ArrayList<>(products.values());
+        try (Session session = sessionFactory.openSession()) {
+            Query<Product> query = session.createQuery("FROM Product", Product.class);
+            return query.list();
+        }
     }
 
     /**
@@ -36,8 +49,10 @@ public class ProductService {
      */
     public Product getProductById(String id) {
         if (id == null) return null;
-        Product product = products.get(id);
-        return (product != null && product.isActive()) ? product : null;
+        
+        try (Session session = sessionFactory.openSession()) {
+            return session.get(Product.class, id);
+        }
     }
 
     /**
