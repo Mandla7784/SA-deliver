@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import main.java.entities.Product;
 import main.java.entities.User;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +25,7 @@ public class Server {
         productService = new ProductService();
         
         port(8080);
-        
+
         // Enable CORS for frontend integration
         enableCORS();
         
@@ -73,7 +74,10 @@ public class Server {
                 String password = json.get("password").getAsString();
                 String email = json.has("email") ? json.get("email").getAsString() : null;
                 
-                User user = new User(username, password, email);
+                User user = new User(username, password);
+                if (email != null && !email.trim().isEmpty()) {
+                    user.setEmail(email);
+                }
                 boolean success = userService.register(username, password);
                 
                 if (success) {
@@ -311,7 +315,7 @@ public class Server {
                     return gson.toJson(new Response(false, "Authentication required"));
                 }
                 
-                boolean deleted = userService.deleteProfile(username);
+            boolean deleted = userService.deleteProfile(username);
                 
                 if (deleted) {
                     return gson.toJson(new Response(true, "Profile deleted successfully"));
@@ -342,10 +346,10 @@ public class Server {
         try {
             // Add sample products if none exist
             if (productService.getAllProducts().isEmpty()) {
-                Product product1 = new Product("Laptop", "High-performance laptop for professionals", 999.99, 10, "Electronics");
-                Product product2 = new Product("Smartphone", "Latest smartphone with advanced features", 699.99, 25, "Electronics");
-                Product product3 = new Product("Coffee Maker", "Automatic coffee maker for home use", 149.99, 15, "Appliances");
-                Product product4 = new Product("Running Shoes", "Comfortable running shoes for athletes", 89.99, 30, "Sports");
+                Product product1 = new Product("Laptop", "High-performance laptop for professionals", new BigDecimal("999.99"), 10, "Electronics");
+                Product product2 = new Product("Smartphone", "Latest smartphone with advanced features", new BigDecimal("699.99"), 25, "Electronics");
+                Product product3 = new Product("Coffee Maker", "Automatic coffee maker for home use", new BigDecimal("149.99"), 15, "Appliances");
+                Product product4 = new Product("Running Shoes", "Comfortable running shoes for athletes", new BigDecimal("89.99"), 30, "Sports");
                 
                 productService.addProduct(product1);
                 productService.addProduct(product2);
