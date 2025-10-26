@@ -3,8 +3,6 @@ import static spark.Spark.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import main.java.entities.Product;
-import main.java.entities.User;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -346,10 +344,10 @@ public class Server {
         try {
             // Add sample products if none exist
             if (productService.getAllProducts().isEmpty()) {
-                Product product1 = new Product("Laptop", "High-performance laptop for professionals", new BigDecimal("999.99"), 10, "Electronics");
-                Product product2 = new Product("Smartphone", "Latest smartphone with advanced features", new BigDecimal("699.99"), 25, "Electronics");
-                Product product3 = new Product("Coffee Maker", "Automatic coffee maker for home use", new BigDecimal("149.99"), 15, "Appliances");
-                Product product4 = new Product("Running Shoes", "Comfortable running shoes for athletes", new BigDecimal("89.99"), 30, "Sports");
+                Product product1 = new Product("Laptop", "High-performance laptop for professionals", 999.99, 10, "Electronics");
+                Product product2 = new Product("Smartphone", "Latest smartphone with advanced features", 699.99, 25, "Electronics");
+                Product product3 = new Product("Coffee Maker", "Automatic coffee maker for home use", 149.99, 15, "Appliances");
+                Product product4 = new Product("Running Shoes", "Comfortable running shoes for athletes", 89.99, 30, "Sports");
                 
                 productService.addProduct(product1);
                 productService.addProduct(product2);
