@@ -66,13 +66,17 @@ public class ProductService {
             throw new IllegalArgumentException("Product cannot be null");
         }
         
-        products.put(product.getId(), product);
-        
-        // Update category index
-        categoryIndex.computeIfAbsent(product.getCategory().toLowerCase(), k -> new ArrayList<>())
-                   .add(product.getId());
-        
-        return product;
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            try {
+                session.persist(product);
+                transaction.commit();
+                return product;
+            } catch (Exception e) {
+                transaction.rollback();
+                throw new RuntimeException("Failed to add product", e);
+            }
+        }
     }
 
     /**
@@ -82,21 +86,30 @@ public class ProductService {
      * @return The updated product, or null if not found
      */
     public Product updateProduct(String id, Product updatedProduct) {
-        if (id == null || updatedProduct == null || !products.containsKey(id)) {
+        if (id == null || updatedProduct == null) {
             return null;
         }
         
-        // Preserve the ID and update other fields
-        updatedProduct = new Product(
-            updatedProduct.getName(),
-            updatedProduct.getDescription(),
-            updatedProduct.getPrice(),
-            updatedProduct.getStock(),
-            updatedProduct.getCategory()
-        );
-        
-        products.put(id, updatedProduct);
-        return updatedProduct;
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            try {
+                Product existingProduct = session.get(Product.class, id);
+                if (existingProduct != null) {
+                    existingProduct.setName(updatedProduct.getName());
+                    existingProduct.setDescription(updatedProduct.getDescription());
+                    existingProduct.setPrice(updatedProduct.getPrice());
+                    existingProduct.setStock(updatedProduct.getStock());
+                    existingProduct.setCategory(updatedProduct.getCategory());
+                    session.merge(existingProduct);
+                    transaction.commit();
+                    return existingProduct;
+                }
+                return null;
+            } catch (Exception e) {
+                transaction.rollback();
+                return null;
+            }
+        }
     }
 
     /**
@@ -106,12 +119,22 @@ public class ProductService {
      * @return true if updated successfully, false if product not found
      */
     public boolean updateProductStock(String id, int newStock) {
-        Product product = getProductById(id);
-        if (product != null) {
-            product.setStock(newStock);
-            return true;
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            try {
+                Product product = session.get(Product.class, id);
+                if (product != null) {
+                    product.setStock(newStock);
+                    session.merge(product);
+                    transaction.commit();
+                    return true;
+                }
+                return false;
+            } catch (Exception e) {
+                transaction.rollback();
+                return false;
+            }
         }
-        return false;
     }
 
     /**
@@ -121,11 +144,23 @@ public class ProductService {
      * @return The new stock level, or -1 if product not found
      */
     public int addStock(String id, int quantity) {
-        Product product = getProductById(id);
-        if (product != null) {
-            return product.addStock(quantity);
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            try {
+                Product product = session.get(Product.class, id);
+                if (product != null) {
+                    int newStock = product.getStock() + quantity;
+                    product.setStock(newStock);
+                    session.merge(product);
+                    transaction.commit();
+                    return newStock;
+                }
+                return -1;
+            } catch (Exception e) {
+                transaction.rollback();
+                return -1;
+            }
         }
-        return -1;
     }
 
     /**
@@ -135,15 +170,23 @@ public class ProductService {
      * @return The new stock level, or -1 if product not found or insufficient stock
      */
     public int removeStock(String id, int quantity) {
-        Product product = getProductById(id);
-        if (product != null) {
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
             try {
-                return product.removeStock(quantity);
-            } catch (IllegalStateException | IllegalArgumentException e) {
+                Product product = session.get(Product.class, id);
+                if (product != null && product.getStock() >= quantity) {
+                    int newStock = product.getStock() - quantity;
+                    product.setStock(newStock);
+                    session.merge(product);
+                    transaction.commit();
+                    return newStock;
+                }
+                return -1;
+            } catch (Exception e) {
+                transaction.rollback();
                 return -1;
             }
         }
-        return -1;
     }
 
     /**
@@ -152,12 +195,22 @@ public class ProductService {
      * @return true if deactivated, false if not found
      */
     public boolean deactivateProduct(String id) {
-        Product product = getProductById(id);
-        if (product != null) {
-            product.setActive(false);
-            return true;
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            try {
+                Product product = session.get(Product.class, id);
+                if (product != null) {
+                    product.setActive(false);
+                    session.merge(product);
+                    transaction.commit();
+                    return true;
+                }
+                return false;
+            } catch (Exception e) {
+                transaction.rollback();
+                return false;
+            }
         }
-        return false;
     }
 
     /**
@@ -166,12 +219,22 @@ public class ProductService {
      * @return true if reactivated, false if not found
      */
     public boolean reactivateProduct(String id) {
-        Product product = products.get(id); // Include inactive products
-        if (product != null) {
-            product.setActive(true);
-            return true;
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            try {
+                Product product = session.get(Product.class, id);
+                if (product != null) {
+                    product.setActive(true);
+                    session.merge(product);
+                    transaction.commit();
+                    return true;
+                }
+                return false;
+            } catch (Exception e) {
+                transaction.rollback();
+                return false;
+            }
         }
-        return false;
     }
 
     /**
@@ -180,20 +243,21 @@ public class ProductService {
      * @return true if deleted, false if not found
      */
     public boolean deleteProduct(String id) {
-        Product product = products.get(id); // Include inactive products
-        if (product != null) {
-            // Remove from category index
-            String category = product.getCategory().toLowerCase();
-            if (categoryIndex.containsKey(category)) {
-                categoryIndex.get(category).remove(id);
-                if (categoryIndex.get(category).isEmpty()) {
-                    categoryIndex.remove(category);
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            try {
+                Product product = session.get(Product.class, id);
+                if (product != null) {
+                    session.remove(product);
+                    transaction.commit();
+                    return true;
                 }
+                return false;
+            } catch (Exception e) {
+                transaction.rollback();
+                return false;
             }
-            products.remove(id);
-            return true;
         }
-        return false;
     }
 
     /**
