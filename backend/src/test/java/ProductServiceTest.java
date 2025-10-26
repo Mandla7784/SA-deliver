@@ -10,9 +10,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ProductServiceTest {
 
 
-
-
-
     @Test
     public void testGetAllProducts() {
         ProductService productService = new ProductService();

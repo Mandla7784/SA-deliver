@@ -11,6 +11,8 @@ public class Server {
     public static void main(String[] args) {
         Gson gson = new Gson();
         UserService userService = new UserService();
+        port(8080);
+
 
         // Health check
         get("/health", (req, res) -> "Server is running");
