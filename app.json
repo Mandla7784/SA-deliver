@@ -1,0 +1,31 @@
+{
+  "name": "sa-deliver-backend",
+  "description": "SA-Deliver E-commerce Backend API",
+  "repository": "https://github.com/yourusername/SA-deliver",
+  "logo": "https://via.placeholder.com/150",
+  "keywords": ["java", "spark", "ecommerce", "api"],
+  "success_url": "/health",
+  "buildpacks": [
+    {
+      "url": "heroku/java"
+    }
+  ],
+  "env": {
+    "JAVA_OPTS": {
+      "description": "Java options",
+      "value": "-Xmx512m -Xms256m"
+    },
+    "DB_TYPE": {
+      "description": "Database type",
+      "value": "h2"
+    },
+    "DB_URL": {
+      "description": "Database URL",
+      "value": "jdbc:h2:mem:testdb"
+    },
+    "JWT_SECRET": {
+      "description": "JWT secret key",
+      "generator": "secret"
+    }
+  }
+}

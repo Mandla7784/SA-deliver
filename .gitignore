@@ -149,3 +149,5 @@ application-*.yml
 # Docker
 Dockerfile
 .dockerignore
+# Local Netlify folder
+.netlify
