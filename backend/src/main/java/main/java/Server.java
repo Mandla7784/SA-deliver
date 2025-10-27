@@ -406,4 +406,26 @@ public class Server {
     public String start() {
         return "Server running on http://localhost:8080";
     }
+
+    public static void main(String[] args) {
+        // Get port from environment variable (Railway sets this)
+        String port = System.getenv("PORT");
+        if (port != null) {
+            port(Integer.parseInt(port));
+        } else {
+            port(8080); // Default port for local development
+        }
+
+        // Initialize services
+        userService = new UserService();
+        productService = new ProductService();
+
+        // Setup routes
+        setupRoutes();
+        setupErrorHandling();
+        initializeSampleData();
+
+        // Start server
+        System.out.println("SA-Deliver server started on port " + (port != null ? port : "8080"));
+    }
 }
