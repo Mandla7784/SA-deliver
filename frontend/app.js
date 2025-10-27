@@ -1,7 +1,10 @@
 // Global variables
 let currentUser = null;
 let sessionToken = null;
-const API_BASE_URL = "http://localhost:8080/api";
+// Use environment variable for API URL, fallback to localhost for development
+const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') 
+  ? "http://localhost:8080/api" 
+  : "/api";
 
 // DOM elements
 const hamburger = document.getElementById("hamburger");

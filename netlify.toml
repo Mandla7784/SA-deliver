@@ -1,12 +1,9 @@
 [build]
   # Build command for Netlify
-  command = "echo 'Frontend build completed'"
+  command = "bash build-frontend.sh"
   
   # Directory to publish
-  publish = "frontend"
-  
-  # Functions directory (if using Netlify Functions)
-  functions = "netlify/functions"
+  publish = "dist"
 
 [build.environment]
   # Node.js version
@@ -82,5 +79,7 @@
     seo = 0.8
 
 # Edge functions (if using Netlify Edge Functions)
-[edge_functions]
-  directory = "netlify/edge-functions"
+# Uncomment and configure if you need edge functions
+# [[edge_functions]]
+#   path = "/api"
+#   function = "api-handler"
