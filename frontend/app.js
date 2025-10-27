@@ -6,7 +6,7 @@ const API_BASE_URL =
   window.location.hostname === "localhost" ||
   window.location.hostname === "127.0.0.1"
     ? "http://localhost:8080/api"
-    : "https://sa-deliver-production-xxxx.up.railway.app/api";
+    : "https://web-production-53da.up.railway.app/api";
 
 // DOM elements
 const hamburger = document.getElementById("hamburger");
