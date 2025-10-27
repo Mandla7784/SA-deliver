@@ -82,6 +82,9 @@ build/
 !mvnw
 !mvnw.cmd
 !pom.xml
+# Allow GitHub Actions workflows
+!.github/workflows/*.yml
+!.github/workflows/*.yaml
 
 # Frontend (if any)
 frontend/node_modules/
