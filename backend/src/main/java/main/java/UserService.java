@@ -183,10 +183,15 @@ public class UserService {
     private void initializeSampleData() {
         // Add a sample user for testing
         try {
-            User sampleUser = new User("admin", "password123");
+            User sampleUser = new User("admin", "admin123");
             users.put("admin", sampleUser);
+            
+            // Add another test user
+            User testUser = new User("test", "test123");
+            users.put("test", testUser);
         } catch (IllegalArgumentException e) {
             // Sample user creation failed, continue without it
+            System.err.println("Failed to create sample users: " + e.getMessage());
         }
     }
 }

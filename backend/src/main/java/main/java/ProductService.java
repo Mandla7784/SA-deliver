@@ -267,10 +267,10 @@ public class ProductService {
 
     private void initializeSampleData() {
         if (products.isEmpty()) {
-            Product product1 = new Product("Laptop", "High-performance laptop for professionals", 999.99, 10, "Electronics");
-            Product product2 = new Product("Smartphone", "Latest smartphone with advanced features", 699.99, 25, "Electronics");
-            Product product3 = new Product("Coffee Maker", "Automatic coffee maker for home use", 149.99, 15, "Appliances");
-            Product product4 = new Product("Running Shoes", "Comfortable running shoes for athletes", 89.99, 30, "Sports");
+            Product product1 = new Product("Laptop", "High-performance laptop for professionals", 17999.82, 10, "Electronics");
+            Product product2 = new Product("Smartphone", "Latest smartphone with advanced features", 12599.82, 25, "Electronics");
+            Product product3 = new Product("Coffee Maker", "Automatic coffee maker for home use", 2699.82, 15, "Appliances");
+            Product product4 = new Product("Running Shoes", "Comfortable running shoes for athletes", 1619.82, 30, "Sports");
             
             products.put(product1.getId(), product1);
             products.put(product2.getId(), product2);

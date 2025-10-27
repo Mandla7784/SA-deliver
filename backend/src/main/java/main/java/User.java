@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
  */
 public class User {
     private static final Pattern USERNAME_PATTERN = Pattern.compile("^[a-zA-Z0-9_]{3,20}$");
-    private static final Pattern PASSWORD_PATTERN = Pattern.compile("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$");
+    private static final Pattern PASSWORD_PATTERN = Pattern.compile("^.{3,}$");
     
     private String username;
     private String password;
