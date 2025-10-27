@@ -18,36 +18,6 @@ public class Server {
     private static ProductService productService;
     private static final Map<String, String> sessionTokens = new HashMap<>();
 
-    public static void main(String[] args) {
-        userService = new UserService();
-        productService = new ProductService();
-        
-        port(8080);
-
-        // Enable CORS for frontend integration
-        enableCORS();
-        
-        // Initialize database with sample data
-        initializeSampleData();
-
-        // Health check
-        get("/health", (req, res) -> {
-            res.type("application/json");
-            return gson.toJson(new Response(true, "Server is running"));
-        });
-
-        // Authentication endpoints
-        setupAuthEndpoints();
-        
-        // Product endpoints
-        setupProductEndpoints();
-        
-        // User profile endpoints
-        setupUserEndpoints();
-        
-        // Error handling
-        setupErrorHandling();
-    }
 
     private static void enableCORS() {
         before((request, response) -> {
@@ -420,10 +390,29 @@ public class Server {
         userService = new UserService();
         productService = new ProductService();
 
-        // Setup routes
-        setupRoutes();
-        setupErrorHandling();
+        // Enable CORS for frontend integration
+        enableCORS();
+        
+        // Initialize database with sample data
         initializeSampleData();
+
+        // Health check
+        get("/health", (req, res) -> {
+            res.type("application/json");
+            return gson.toJson(new Response(true, "Server is running"));
+        });
+
+        // Authentication endpoints
+        setupAuthEndpoints();
+        
+        // Product endpoints
+        setupProductEndpoints();
+        
+        // User profile endpoints
+        setupUserEndpoints();
+        
+        // Error handling
+        setupErrorHandling();
 
         // Start server
         System.out.println("SA-Deliver server started on port " + (port != null ? port : "8080"));
