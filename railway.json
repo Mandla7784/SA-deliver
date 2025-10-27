@@ -3,7 +3,7 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "mvn clean package && java -cp 'backend/target/classes:backend/target/dependency/*' main.java.Server",
+    "startCommand": "mvn clean package && java -jar target/sa-deliver-backend.jar",
     "healthcheckPath": "/health",
     "healthcheckTimeout": 100,
     "restartPolicyType": "ON_FAILURE",
