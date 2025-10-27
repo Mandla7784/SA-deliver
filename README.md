@@ -1,220 +1,224 @@
-# SA-Deliver E-Commerce Application
+# SA-Deliver E-commerce Application
 
-A full-stack e-commerce application built with Java (Spark Framework) backend and vanilla JavaScript frontend.
+A full-stack e-commerce application built with Java backend and vanilla JavaScript frontend.
 
-## Features
+## 🚀 Quick Start
 
-- **User Authentication**: Register, login, logout with session management
-- **Product Management**: Browse products, search, filter by categories
-- **User Profiles**: View and update user profiles
-- **Responsive Design**: Modern, mobile-friendly interface
-- **RESTful API**: Clean API endpoints for all operations
+### Prerequisites
+- Java 21 or higher
+- Maven 3.6+
+- Git
 
-## Prerequisites
+### Running the Application
 
-- **Java 17 or higher**
-- **Maven 3.6 or higher**
-- **Python 3.x** (for frontend HTTP server)
-- **Git** (for cloning the repository)
-
-## Quick Start
-
-### Option 1: Automated Scripts (Recommended)
-
-#### Windows Users:
+#### Option 1: Using Startup Scripts (Recommended)
 ```bash
-# Run the batch file
+# For Linux/macOS/WSL
+bash start-app.sh
+
+# For Windows PowerShell
+.\start-app.ps1
+
+# For Windows Command Prompt
 start-app.bat
-
-# Or run the PowerShell script
-powershell -ExecutionPolicy Bypass -File start-app.ps1
 ```
 
-#### Linux/macOS Users:
+#### Option 2: Manual Setup
 ```bash
-# Make the script executable and run
-chmod +x start-app.sh
-./start-app.sh
+# Start backend server
+cd backend
+mvn clean compile exec:java
+
+# In another terminal, start frontend server
+cd frontend
+python -m http.server 8000
 ```
 
-### Option 2: Manual Setup
+## 🏗️ CI/CD Pipeline
 
-1. **Clone the repository:**
-   ```bash
-   git clone <repository-url>
-   cd SA-deliver
-   ```
+This project includes GitHub Actions for automated testing and deployment:
 
-2. **Build the backend:**
-   ```bash
-   cd backend
-   mvn clean compile
-   ```
+### Workflow Features
+- **Backend Testing**: Runs Maven tests on Java 21
+- **Frontend Testing**: Validates HTML/CSS/JS
+- **Integration Testing**: Tests API endpoints
+- **Staging Deployment**: Auto-deploys from `develop` branch
+- **Production Deployment**: Auto-deploys from `main` branch
 
-3. **Start the backend server:**
-   ```bash
-   mvn exec:java -Dexec.mainClass="main.java.Server"
-   ```
+### Pipeline Stages
+1. **Test Backend** - Compiles and tests Java code
+2. **Test Frontend** - Validates frontend code
+3. **Integration Test** - Tests full application stack
+4. **Deploy Staging** - Deploys to staging environment
+5. **Deploy Production** - Deploys to production environment
 
-4. **Start the frontend server:**
-   ```bash
-   cd ../frontend
-   python -m http.server 3000
-   ```
+## 🌐 Netlify Deployment
 
-5. **Open your browser:**
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:8080
+The project is configured for Netlify deployment with:
 
-## Application URLs
+### Features
+- **Automatic Builds**: Triggers on Git pushes
+- **Branch Deploys**: Preview deployments for PRs
+- **Environment Variables**: Different configs for staging/production
+- **Security Headers**: CSP, XSS protection, etc.
+- **Performance Optimization**: Asset caching and minification
 
-- **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:8080
-- **Health Check**: http://localhost:8080/health
+### Netlify Configuration
+- **Build Command**: Custom build process
+- **Publish Directory**: `frontend/`
+- **Redirects**: SPA routing support
+- **Headers**: Security and performance headers
 
-## Test Credentials
-
-- **Username**: `admin`, **Password**: `admin123`
-- **Username**: `test`, **Password**: `test123`
-
-## API Endpoints
-
-### Authentication
-- `POST /api/register` - Register a new user
-- `POST /api/login` - User login
-- `POST /api/logout` - User logout
-
-### Products
-- `GET /api/products` - Get all products
-- `GET /api/products/:id` - Get product by ID
-- `GET /api/products/search/:query` - Search products
-- `GET /api/products/category/:category` - Get products by category
-- `POST /api/products` - Add new product (authenticated)
-- `PUT /api/products/:id` - Update product (authenticated)
-- `DELETE /api/products/:id` - Delete product (authenticated)
-
-### Categories
-- `GET /api/categories` - Get all categories
-
-### User Profile
-- `GET /api/profile` - Get user profile (authenticated)
-- `PUT /api/profile` - Update user profile (authenticated)
-- `DELETE /api/profile` - Delete user account (authenticated)
-
-## Project Structure
+## 📁 Project Structure
 
 ```
 SA-deliver/
+├── .github/
+│   └── workflows/
+│       └── ci-cd.yml          # GitHub Actions pipeline
 ├── backend/
-│   ├── src/main/java/main/java/
-│   │   ├── Server.java              # Main server class
-│   │   ├── User.java                # User model
-│   │   ├── Product.java             # Product model
-│   │   ├── UserService.java         # User business logic
-│   │   ├── ProductService.java      # Product business logic
-│   │   └── Response.java            # API response wrapper
-│   ├── src/main/java/main/java/entities/
-│   │   ├── User.java                # JPA User entity
-│   │   └── Product.java             # JPA Product entity
-│   ├── src/main/resources/
-│   │   └── hibernate.cfg.xml         # Hibernate configuration
-│   └── pom.xml                      # Maven dependencies
+│   ├── src/
+│   │   ├── main/java/
+│   │   └── test/java/
+│   ├── pom.xml                # Maven configuration
+│   └── target/                # Compiled classes
 ├── frontend/
-│   ├── index.html                   # Main HTML file
-│   ├── app.js                       # JavaScript application
-│   └── styles.css                   # CSS styles
-├── start-app.sh                     # Linux/macOS startup script
-├── start-app.bat                    # Windows batch startup script
-├── start-app.ps1                    # PowerShell startup script
-└── README.md                        # This file
+│   ├── index.html             # Main application
+│   ├── styles.css             # Styling
+│   └── app.js                 # JavaScript logic
+├── netlify.toml               # Netlify configuration
+├── start-app.sh               # Linux/macOS startup script
+├── start-app.ps1              # PowerShell startup script
+├── start-app.bat              # Windows startup script
+└── README.md                  # This file
 ```
 
-## Technology Stack
-
-### Backend
-- **Java 17** - Programming language
-- **Spark Framework** - Web framework
-- **Maven** - Dependency management
-- **Hibernate** - ORM (configured but using in-memory storage)
-- **H2 Database** - In-memory database
-- **JWT** - Authentication tokens
-- **Gson** - JSON processing
-
-### Frontend
-- **HTML5** - Markup
-- **CSS3** - Styling with modern features
-- **Vanilla JavaScript** - Client-side logic
-- **Font Awesome** - Icons
-- **Responsive Design** - Mobile-friendly
-
-## Development
+## 🧪 Testing
 
 ### Running Tests
 ```bash
-cd backend
-mvn test
+# Run all tests
+cd backend && mvn test
+
+# Run specific test class
+mvn test -Dtest=UserServiceTest
+
+# Run with coverage
+mvn test jacoco:report
 ```
 
-### Building for Production
+### Test Coverage
+- **UserServiceTest**: 8 tests - User registration, login, profile management
+- **ProductServiceTest**: 5 tests - Product CRUD operations
+- **ServerTest**: 11 tests - API endpoint testing
+
+## 🔧 Development
+
+### Backend API Endpoints
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/login` - User login
+- `GET /api/products` - Get all products
+- `POST /api/products` - Create product
+- `PUT /api/products/:id` - Update product
+- `DELETE /api/products/:id` - Delete product
+
+### Environment Variables
 ```bash
-cd backend
-mvn clean package
+# Backend
+PORT=8080
+DB_URL=jdbc:h2:mem:testdb
+
+# Frontend
+API_URL=http://localhost:8080
 ```
 
-### Docker Support
+## 🚀 Deployment
+
+### GitHub Actions
+The CI/CD pipeline automatically:
+1. Tests code on every push/PR
+2. Builds artifacts
+3. Deploys to staging (develop branch)
+4. Deploys to production (main branch)
+
+### Netlify
+1. Connect your GitHub repository to Netlify
+2. Set build command: `echo 'Frontend build completed'`
+3. Set publish directory: `frontend`
+4. Configure environment variables in Netlify dashboard
+
+### Manual Deployment
 ```bash
-# Build Docker image
-make docker-build
+# Build backend
+cd backend && mvn clean package
 
-# Run in Docker
-make docker-run
-
-# Stop Docker container
-make docker-stop
+# Deploy frontend to any static hosting
+# Copy frontend/ directory to your hosting provider
 ```
 
-## Troubleshooting
+## 🔒 Security
 
-### Common Issues
+### Implemented Security Features
+- Password hashing with bcrypt
+- JWT token authentication
+- CORS configuration
+- Input validation
+- SQL injection prevention
 
-1. **Port already in use:**
-   - The scripts will automatically kill existing processes
-   - Or manually kill processes using ports 8080 and 3000
+### Security Headers (Netlify)
+- Content Security Policy
+- X-Frame-Options
+- X-XSS-Protection
+- X-Content-Type-Options
 
-2. **Java version issues:**
-   - Ensure Java 17+ is installed and in PATH
-   - Check with `java -version`
+## 📊 Monitoring
 
-3. **Maven not found:**
-   - Install Maven and ensure it's in PATH
-   - Check with `mvn -version`
+### Health Checks
+- Backend: `GET /health` - Server status
+- Frontend: Built-in error handling
 
-4. **Frontend not loading:**
-   - Ensure Python is installed for HTTP server
-   - Or manually open `frontend/index.html` in browser
+### Logging
+- Backend: SLF4J with Logback
+- Frontend: Console logging
 
-### Logs and Debugging
-
-- Backend logs are displayed in the terminal
-- Frontend errors are shown in browser console
-- API responses include detailed error messages
-
-## Contributing
+## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## License
+### Development Workflow
+1. Make changes on `develop` branch
+2. Create PR to `main` branch
+3. CI/CD pipeline runs automatically
+4. Review and merge
 
-This project is licensed under the MIT License.
+## 📝 License
 
-## Support
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-For issues and questions:
-1. Check the troubleshooting section
-2. Review the API documentation
-3. Check browser console for frontend errors
-4. Review backend terminal output for server errors
+## 🆘 Troubleshooting
+
+### Common Issues
+1. **Port conflicts**: Change port in `Server.java` or kill existing processes
+2. **Java version**: Ensure Java 21+ is installed
+3. **Maven issues**: Clear Maven cache with `mvn clean`
+4. **CORS errors**: Check API URL configuration
+
+### Getting Help
+- Check the logs in `backend/logs/`
+- Verify environment variables
+- Ensure all dependencies are installed
+- Check GitHub Actions logs for CI/CD issues
+
+## 🎯 Roadmap
+
+- [ ] Add Docker containerization
+- [ ] Implement payment integration
+- [ ] Add email notifications
+- [ ] Implement user roles and permissions
+- [ ] Add product image upload
+- [ ] Implement shopping cart persistence
+- [ ] Add order management system
