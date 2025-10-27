@@ -114,10 +114,21 @@ try {
     }
     
     # Check Java version
-    $javaVersion = (java -version 2>&1 | Select-String "version" | ForEach-Object { $_.Line.Split('"')[1] }).Split('.')[0]
-    if ([int]$javaVersion -lt 17) {
-        Write-Error "Java version $javaVersion is not supported. Please use Java 17 or higher."
-        exit 1
+    try {
+        $javaVersionOutput = java -version 2>&1
+        $javaVersion = ($javaVersionOutput | Select-String "version" | Select-Object -First 1).Line
+        if ($javaVersion -match '"(\d+)') {
+            $versionNumber = [int]$matches[1]
+            if ($versionNumber -lt 17) {
+                Write-Error "Java version $versionNumber is not supported. Please use Java 17 or higher."
+                exit 1
+            }
+        } else {
+            Write-Warning "Could not parse Java version, but Java is installed. Continuing..."
+        }
+    }
+    catch {
+        Write-Warning "Could not check Java version, but Java is installed. Continuing..."
     }
     
     Write-Success "Prerequisites check passed"

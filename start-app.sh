@@ -104,10 +104,16 @@ main() {
     fi
     
     # Check Java version
-    JAVA_VERSION=$(java -version 2>&1 | head -n 1 | cut -d'"' -f2 | cut -d'.' -f1)
-    if [ "$JAVA_VERSION" -lt 17 ]; then
+    JAVA_VERSION=$(java -version 2>&1 | head -n 1 | grep -o 'version "[0-9]*' | grep -o '[0-9]*')
+    if [ -z "$JAVA_VERSION" ]; then
+        JAVA_VERSION=$(java -version 2>&1 | head -n 1 | grep -o '"[0-9]*' | grep -o '[0-9]*')
+    fi
+    
+    if [ -n "$JAVA_VERSION" ] && [ "$JAVA_VERSION" -lt 17 ]; then
         print_error "Java version $JAVA_VERSION is not supported. Please use Java 17 or higher."
         exit 1
+    elif [ -z "$JAVA_VERSION" ]; then
+        print_warning "Could not parse Java version, but Java is installed. Continuing..."
     fi
     
     print_success "Prerequisites check passed"
