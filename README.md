@@ -195,9 +195,6 @@ cd backend && mvn clean package
 3. CI/CD pipeline runs automatically
 4. Review and merge
 
-## 📝 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## 🆘 Troubleshooting
 
@@ -212,13 +209,3 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Verify environment variables
 - Ensure all dependencies are installed
 - Check GitHub Actions logs for CI/CD issues
-
-## 🎯 Roadmap
-
-- [ ] Add Docker containerization
-- [ ] Implement payment integration
-- [ ] Add email notifications
-- [ ] Implement user roles and permissions
-- [ ] Add product image upload
-- [ ] Implement shopping cart persistence
-- [ ] Add order management system
