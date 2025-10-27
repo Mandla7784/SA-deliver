@@ -1,12 +1,16 @@
-import  main.java.UserService;
-
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import  java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.nio.charset.StandardCharsets;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import main.java.UserService;
 
 /**
  * 
@@ -21,7 +25,9 @@ public class UserServiceTest {
 
     @Test
     void testPasswordHashConsistency() throws NoSuchAlgorithmException {
-        userService.hashingPassword("password123");
+        String hashedPassword = userService.hashPassword("password123");
+        assertNotNull(hashedPassword);
+        assertFalse(hashedPassword.isEmpty());
     }
 
     @Test
@@ -53,8 +59,10 @@ public class UserServiceTest {
 
     @Test
     void testLoginSuccess() {
+        // First register a user
+        userService.register("Mandla", "passord123");
+        // Then try to login
         boolean result = userService.login("Mandla", "passord123");
-        System.out.println(result);
         assertTrue(result);
     }
 
@@ -80,12 +88,15 @@ public class UserServiceTest {
     @Test
     void testViewProfile() {
         userService.register("TestUser", "password123");
-        userService.viewProfile("TestUser");
+        var profile = userService.getProfile("TestUser");
+        assertNotNull(profile);
+        assertEquals("TestUser", profile.getUsername());
     }
 
     @Test
     void testDeleteProfile() {
         userService.register("UserToDelete", "password123");
-        userService.deleteProfile("UserToDelete");
+        boolean result = userService.deleteProfile("UserToDelete");
+        assertTrue(result);
     }
 }

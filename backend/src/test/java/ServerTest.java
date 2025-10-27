@@ -1,13 +1,12 @@
 
-import  main.java.UserService;
-
-
-
+import  static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
 import main.java.Server;
 import main.java.User;
+import main.java.UserService;
 
 
 
@@ -21,58 +20,73 @@ public class ServerTest {
 
     @Test
     void testServerLoginSuccess() {
-        Server server = new Server();
-          assertTrue(server.loginHandler(new UserService(), new User("Mandla", "password")));
-
+        UserService userService = new UserService();
+        // First register the user
+        userService.register("Mandla", "password");
+        // Then test login
+        assertTrue(Server.loginHandler(userService, new User("Mandla", "password")));
     }
 
     @Test
     void testServerLoginFailure() {
-        Server server = new Server();
-          assertFalse(server.loginHandler(new UserService(), new User("Mandla", "password")));
-
+        UserService userService = new UserService();
+        // Try to login with non-existent user
+        assertFalse(Server.loginHandler(userService, new User("NonExistentUser", "password")));
     }
     @Test
     void testServerRegisterSuccess() {
-        Server server = new Server();
-        assertTrue(server.registerHandler(new UserService(), new User("Mandla", "password")));
-
+        UserService userService = new UserService();
+        assertTrue(Server.registerHandler(userService, new User("NewUser", "password")));
     }
     @Test
     void testServerRegisterFailure() {
-        Server server = new Server();
-        assertFalse(server.registerHandler(new UserService(), new User("Mandla", "password")));
-
+        UserService userService = new UserService();
+        // First register a user
+        userService.register("ExistingUser", "password");
+        // Try to register the same user again - should fail
+        assertFalse(Server.registerHandler(userService, new User("ExistingUser", "password")));
     }
     @Test
     void testServerDeleteProfileSuccess() {
-        Server server = new Server();
-        assertTrue(server.deleteProfileHandler(new UserService(), new User("Mandla", "password")));
+        UserService userService = new UserService();
+        // First register a user
+        userService.register("UserToDelete", "password");
+        // Then test delete
+        assertTrue(Server.deleteProfileHandler(userService, new User("UserToDelete", "password")));
     }
     @Test
     void testServerDeleteProfileFailure() {
-        Server server = new Server();
-        assertFalse(server.deleteProfileHandler(new UserService(), new User("Mandla", "password")));
+        UserService userService = new UserService();
+        // Try to delete non-existent user - should fail
+        assertFalse(Server.deleteProfileHandler(userService, new User("NonExistentUser", "password")));
     }
     @Test
     void testServerUpdateProfileSuccess() {
-        Server server = new Server();
-        assertTrue(server.updateProfileHandler(new UserService(), new User("Mandla", "password")));
+        UserService userService = new UserService();
+        // First register a user
+        userService.register("UserToUpdate", "password");
+        // Then test update
+        assertTrue(Server.updateProfileHandler(userService, new User("UserToUpdate", "newpassword")));
     }
     @Test
     void testServerUpdateProfileFailure() {
-        Server server = new Server();
-        assertFalse(server.updateProfileHandler(new UserService(), new User("Mandla", "password")));
+        UserService userService = new UserService();
+        // Try to update non-existent user - should fail
+        assertFalse(Server.updateProfileHandler(userService, new User("NonExistentUser", "password")));
     }
     @Test
     void testServerGetProfileSuccess() {
-        Server server = new Server();
-        assertTrue(server.getProfileHandler(new UserService(), new User("Mandla", "password")));
+        UserService userService = new UserService();
+        // First register a user
+        userService.register("UserToGet", "password");
+        // Then test get profile
+        assertTrue(Server.getProfileHandler(userService, new User("UserToGet", "password")));
     }
     @Test
     void testServerGetProfileFailure() {
-        Server server = new Server();
-        assertFalse(server.getProfileHandler(new UserService(), new User("Mandla", "password")));
+        UserService userService = new UserService();
+        // Try to get profile of non-existent user - should fail
+        assertFalse(Server.getProfileHandler(userService, new User("NonExistentUser", "password")));
     }
 
 }
