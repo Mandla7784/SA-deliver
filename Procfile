@@ -1,1 +1,1 @@
-web: cd backend && mvn clean package && java -cp "target/classes:target/dependency/*" main.java.Server
+web: mvn clean package && java -cp "backend/target/classes:backend/target/dependency/*" main.java.Server
