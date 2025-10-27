@@ -1,32 +1,65 @@
-# Use a base image with Maven and JDK
-FROM maven:3.8.4-openjdk-17-slim AS build
+# SA-Deliver Docker Configuration
+
+# Multi-stage build for production deployment
+FROM openjdk:21-jdk-slim AS backend-builder
 
 # Set working directory
 WORKDIR /app
 
-# Copy the POM file first to leverage Docker cache
-COPY backend/pom.xml .
+# Copy Maven files
+COPY backend/pom.xml backend/pom.xml
+COPY backend/src backend/src
 
-# Download dependencies
-RUN mvn dependency:go-offline -B
+# Install Maven
+RUN apt-get update && apt-get install -y maven && rm -rf /var/lib/apt/lists/*
 
-# Copy the rest of the source code
-COPY backend/src ./src
+# Build backend
+WORKDIR /app/backend
+RUN mvn clean package -DskipTests
 
-# Build the application
-RUN mvn package -DskipTests
+# Frontend build stage
+FROM node:18-alpine AS frontend-builder
 
-# Use a smaller JRE image for the final container
-FROM openjdk:17-jdk-slim
+WORKDIR /app
+COPY frontend/ frontend/
+
+# Build frontend (if package.json exists)
+WORKDIR /app/frontend
+RUN if [ -f package.json ]; then npm ci && npm run build; else echo "No package.json found, copying static files"; fi
+
+# Production stage
+FROM openjdk:21-jre-slim
+
+# Install nginx for serving frontend
+RUN apt-get update && apt-get install -y nginx && rm -rf /var/lib/apt/lists/*
+
+# Copy backend JAR
+COPY --from=backend-builder /app/backend/target/*.jar /app/app.jar
+
+# Copy frontend build
+COPY --from=frontend-builder /app/frontend/dist/ /var/www/html/
+
+# Copy nginx configuration
+COPY docker/nginx.conf /etc/nginx/nginx.conf
+
+# Expose ports
+EXPOSE 80 8080
+
+# Create startup script
+RUN echo '#!/bin/bash\n\
+# Start nginx\n\
+nginx\n\
+# Start backend\n\
+java -jar /app/app.jar &\n\
+# Wait for processes\n\
+wait' > /app/start.sh && chmod +x /app/start.sh
 
 # Set working directory
 WORKDIR /app
 
-# Copy the JAR file from the build stage
-COPY --from=build /app/target/*.jar app.jar
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:8080/health || exit 1
 
-# Expose the port the app runs on
-EXPOSE 8080
-
-# Command to run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Start application
+CMD ["/app/start.sh"]
